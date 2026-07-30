@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import * as dotenv from 'dotenv';
+import { StringValue } from 'ms';
 
 dotenv.config();
 
@@ -35,11 +36,11 @@ const configuration = () => ({
     USER: {
       ACCESS_TOKEN: {
         SECRET: config.get<string>('USER_ACCESS_SECRET'),
-        EXPIRY: config.get<string>('USER_ACCESS_EXPIRY_TIME'),
+        EXPIRY: config.get<StringValue>('USER_ACCESS_EXPIRY_TIME'),
       },
       REFRESH_TOKEN: {
         SECRET: config.get<string>('USER_REFRESH_SECRET'),
-        EXPIRY: config.get<string>('USER_REFRESH_EXPIRY_TIME'),
+        EXPIRY: config.get<StringValue>('USER_REFRESH_EXPIRY_TIME'),
       },
     },
   },

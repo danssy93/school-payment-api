@@ -1,6 +1,8 @@
 import { randomUUID } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { CONFIGURATION } from 'src/lib';
+import moment from 'moment-timezone';
 
 export class Helpers {
   static async fetchMockFile(
@@ -59,4 +61,9 @@ export class Helpers {
 
     return Number(totalAmount);
   };
+
+  static getWATDateTimestamp(): string {
+    const currentTime = moment().tz(CONFIGURATION.APP.TIMEZONE);
+    return currentTime.format('YYYY-MM-DD HH:mm:ss');
+  }
 }

@@ -18,7 +18,16 @@ import {
   ChangePasswordDto,
 } from '../../dtos/user.dto';
 import { ResponseFormat } from 'src/common/utils';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserJwtGuard } from 'src/modules/auth/guards';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { UserType } from 'src/database/entities';
 
 @ApiTags('Users Account Module')
 @Controller('user')
@@ -32,6 +41,9 @@ export class UserController {
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: 201, description: 'User create successfully' })
   @ApiResponse({ status: 400, description: 'Invalid data' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN)
   @Post()
   async createUser(@Body() payload: CreateUserDto, @Res() res: Response) {
     const user = await this.userService.create(payload);
@@ -45,6 +57,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Get()
   async getAllUser(@Res() res: Response) {
     const user = await this.userService.find();
@@ -59,6 +74,9 @@ export class UserController {
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, description: 'User retrieved successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Get(':id')
   async getUserById(@Res() res: Response, @Param('id') id: string) {
     const user = await this.userService.findOne({ id }, true);
@@ -72,6 +90,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({ status: 202, description: 'User updated successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Patch(':id')
   async updateUser(
     @Res() res: Response,
@@ -89,6 +110,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'Promote Bursar to Admin' })
   @ApiResponse({ status: 200, description: 'User promoted successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Patch(':id/promote-admin')
   async upgradeUserType(@Res() res: Response, @Param('id') id: string) {
     const user = await this.userService.promoteAdmin(id);
@@ -102,6 +126,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'Demote Admin to Bursar' })
   @ApiResponse({ status: 200, description: 'User demoted successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Patch(':id/demote-admin')
   async downgradeUserType(@Res() res: Response, @Param('id') id: string) {
     const user = await this.userService.demoteToBursar(id);
@@ -115,23 +142,27 @@ export class UserController {
 
   @ApiOperation({ summary: 'Change user password' })
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
   @Patch(':id/change-password')
   async changePassword(
     @Res() res: Response,
     @Body() payload: ChangePasswordDto,
     @Param('id') id: string,
   ) {
-    const user = await this.userService.changePassword(id, payload);
-    return ResponseFormat.success(
+    await this.userService.changePassword(id, payload);
+    return ResponseFormat.ok(
       res,
       'Password successfully changed',
-      user,
       HttpStatus.OK,
     );
   }
 
   @ApiOperation({ summary: 'Deactivate user account' })
   @ApiResponse({ status: 200, description: 'User deactivated successfully' })
+  @ApiBearerAuth('jwt')
+  @UseGuards(UserJwtGuard)
+  @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Delete(':id')
   async deleteUser(@Res() res: Response, @Param('id') id: string) {
     await this.userService.deactivate(id);

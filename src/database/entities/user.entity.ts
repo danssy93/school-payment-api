@@ -1,7 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AbstractEntity } from './base.entity';
-import { RefreshToken } from './refreshToken.entity';
 
 export enum UserType {
   SUPER_ADMIN = 'super_admin',
@@ -58,8 +57,14 @@ export class User extends AbstractEntity {
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
   status: UserStatus;
 
-  @OneToMany(() => RefreshToken, (RefreshToken) => RefreshToken.user)
-  refresh_token: RefreshToken[];
+  @Column({ type: 'text', nullable: true })
+  refresh_token?: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  profile_picture?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  last_login?: Date | null;
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -86,6 +91,7 @@ export class User extends AbstractEntity {
       email: this.email,
       type: this.type,
       status: this.status,
+      profile_picture: this.profile_picture,
       created_at: this.created_at,
     };
   }

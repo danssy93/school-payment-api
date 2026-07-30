@@ -5,6 +5,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { CONFIGURATION } from 'src/lib';
 import { UserModule } from '../user/user.module';
 import { StringValue } from 'ms';
+import { UserJwtStrategy } from './strategies/jwt.strategy';
+import { UserRefreshTokenStrategy } from './strategies/refresh-token.strategy';
+import { UserJwtGuard, UserRefreshAuthGuard } from './guards';
 
 @Module({
   imports: [
@@ -19,6 +22,12 @@ import { StringValue } from 'ms';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    UserJwtStrategy,
+    UserRefreshTokenStrategy,
+    UserJwtGuard,
+    UserRefreshAuthGuard,
+  ],
 })
 export class AuthModule {}
