@@ -10,12 +10,17 @@ import {
   QueryRunner,
 } from 'typeorm';
 import { ChangePasswordDto } from '../../dtos/user.dto';
+import { AssignStaffToClassRepository } from 'src/database/repository';
+import { UserWithClassPayload } from '../../interface/userclass.interface';
 
 @Injectable()
 export class UserService {
   protected readonly logger = new Logger(UserService.name);
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly assignmentRepository: AssignStaffToClassRepository,
+  ) {}
 
   async create(user: Partial<User>, queryRunner?: QueryRunner): Promise<User> {
     return await this.userRepository.create(user, queryRunner);
@@ -49,6 +54,40 @@ export class UserService {
     options?: FindManyOptions<User> | FindOptionsWhere<User>,
   ): Promise<User[]> {
     return this.userRepository.find(options);
+  }
+
+  async findUserWithClass(id: string): Promise<UserWithClassPayload> {
+    const user = await this.findOne({ id }, true);
+    if (!user) {
+      throw new AppError('User not found', HttpStatus.NOT_FOUND);
+    }
+    const payload: UserWithClassPayload = { ...user.toPayload(), class: null };
+
+    if (
+      user.type === UserType.TEACHER ||
+      user.type === UserType.BURSAR ||
+      user.type === UserType.ADMIN
+    ) {
+      const assignment = await this.assignmentRepository.findMany({
+        where: { user_id: id, is_active: true },
+        relations: { class_arm: { class: true } },
+      });
+
+      if (assignment.length > 0) {
+        payload.class = assignment.map((assignment) => ({
+          assignment_id: assignment.id,
+          assignment_type: assignment.assignment_type,
+          arm_id: assignment.class_arm?.id,
+          arm_name: assignment.class_arm?.name,
+          class_id: assignment.class_arm?.class_id,
+          class_name: assignment.class_arm?.class?.name,
+          session_id: assignment.session_id,
+        }));
+      } else {
+        payload.class = [];
+      }
+    }
+    return payload;
   }
 
   async update(

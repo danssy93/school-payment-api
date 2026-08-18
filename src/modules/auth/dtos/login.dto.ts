@@ -10,7 +10,6 @@ export class LoginDto {
   @IsNotEmpty({ message: ' Phone number is required.' })
   @Matches(/^[^\s]+$/, { message: ' Phone number cannot be empty.' })
   @IsString({ message: ' Phone number must be a string' })
-  @IsPhoneNumber('NG', { message: 'Invalid  Phone number format' })
   identifier: string;
 
   @ApiProperty({
@@ -20,8 +19,5 @@ export class LoginDto {
   })
   @IsNotEmpty({ message: 'Login PIN is required' })
   @IsString({ message: 'Password must be a string' })
-  @Matches(/^\d{6}$/, {
-    message: 'Password must be a 6-digit PIN containing only numbers',
-  })
   password: string;
 }

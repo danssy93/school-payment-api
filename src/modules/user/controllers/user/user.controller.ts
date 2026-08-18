@@ -79,7 +79,7 @@ export class UserController {
   @Roles(UserType.SUPER_ADMIN, UserType.ADMIN)
   @Get(':id')
   async getUserById(@Res() res: Response, @Param('id') id: string) {
-    const user = await this.userService.findOne({ id }, true);
+    const user = await this.userService.findUserWithClass(id);
     return ResponseFormat.success(
       res,
       'User Retrieved successfully',
