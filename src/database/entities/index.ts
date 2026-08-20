@@ -5,3 +5,6 @@ export * from './classArm.entity';
 export * from './session.entity';
 export * from './term.entity';
 export * from './assign.entity';
+export * from './student.entity';
+export * from './guardian.entity';
+export * from './admissionNumber.entity';
