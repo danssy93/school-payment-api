@@ -9,6 +9,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { FeeCategoryRepository } from 'src/database/repository/feeCategory.repository';
 import { FeeStructureRepository } from 'src/database/repository/feeStructure.repository';
 import { FeeDicountRepository } from 'src/database/repository/feeDiscount.repository';
+import { StudentRepository } from 'src/database/repository';
 
 @Module({
   imports: [DatabaseModule.forFeature()],
@@ -19,6 +20,7 @@ import { FeeDicountRepository } from 'src/database/repository/feeDiscount.reposi
     FeeCategoryRepository,
     FeeStructureRepository,
     FeeDicountRepository,
+    StudentRepository,
   ],
   controllers: [
     FeeCategoryController,
