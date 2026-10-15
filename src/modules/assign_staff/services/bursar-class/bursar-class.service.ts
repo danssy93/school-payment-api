@@ -151,19 +151,26 @@ export class AssignStaffService {
     return assignment.toPayload();
   }
 
+  async getAllAssignments(): Promise<Partial<AssignStaffToClass>[]> {
+    const assignments = await this.assignStaffToClass.findMany({
+      where: { is_active: true },
+      relations: { class_arm: true, session: true },
+    });
+    return assignments.map((a) => a.toPayload());
+  }
+
   async getUserAssignments(
     user_id: string,
-  ): Promise<Partial<AssignStaffToClass>[]> {
-    const user = await this.assignStaffToClass.findOne({ id: user_id });
+  ): Promise<Partial<AssignStaffToClass>> {
+    const user = await this.assignStaffToClass.findOne(
+      { id: user_id },
+      { relations: { class_arm: true, session: true } },
+    );
     if (!user) {
       throw new AppError('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const assignments = await this.assignStaffToClass.findMany({
-      where: { user_id, is_active: true },
-      relations: { class_arm: true, session: true },
-    });
-    return assignments.map((a) => a.toPayload());
+    return user.toPayload();
   }
 
   async removeAssignment(id: string): Promise<void> {

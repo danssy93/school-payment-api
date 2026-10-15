@@ -172,6 +172,24 @@ export abstract class BaseRepository<
     return result.affected || 0;
   }
 
+  async restore(
+    where: FindOptionsWhere<T>,
+    queryRunner?: QueryRunner,
+  ): Promise<number> {
+    if (queryRunner) {
+      const result = await queryRunner.manager.restore(
+        this.repository.target,
+        where,
+      );
+
+      return result.affected || 0;
+    }
+
+    const result = await this.repository.restore(where);
+
+    return result.affected || 0;
+  }
+
   async count(where?: FindOptionsWhere<T>): Promise<number> {
     return await this.repository.count({ where });
   }

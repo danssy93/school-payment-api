@@ -1,8 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { AbstractEntity } from './base.entity';
 import { BloodGroup, Gender, Genotype, StudentStatus } from '../enums';
 import { User } from './user.entity';
 import { Guardian } from './guardian.entity';
+import { StudentEnrollment } from './studentEnrollment.entity';
+import { FeeDiscount } from './feeDiscount.entity';
 
 @Entity('students')
 export class Student extends AbstractEntity {
@@ -50,6 +52,9 @@ export class Student extends AbstractEntity {
   })
   genotype?: Genotype;
 
+  @Column({ type: 'text', nullable: true })
+  health_notes?: string;
+
   @Column({
     type: 'enum',
     enum: StudentStatus,
@@ -57,8 +62,11 @@ export class Student extends AbstractEntity {
   })
   student_status: StudentStatus;
 
+  @Column({ type: 'text', nullable: true })
+  status_reason?: string;
+
   @Column({ type: 'uuid' })
-  registered_by: User;
+  registered_by: string;
 
   @ManyToOne(() => Guardian, { nullable: false })
   @JoinColumn({ name: 'guardian_id' })
@@ -71,6 +79,9 @@ export class Student extends AbstractEntity {
     name: 'registered_by',
   })
   registered_by_user: User;
+
+  @OneToMany(() => StudentEnrollment, (enrollment) => enrollment.student)
+  enrollments: StudentEnrollment[];
 
   toPayload(): Partial<Student> {
     return {
@@ -86,8 +97,12 @@ export class Student extends AbstractEntity {
       previous_school: this.previous_school,
       blood_group: this.blood_group,
       genotype: this.genotype,
+      health_notes: this.health_notes,
       student_status: this.student_status,
+      status_reason: this.status_reason,
       registered_by: this.registered_by,
+      guardian: this.guardian,
+      enrollments: this.enrollments,
       created_at: this.created_at,
       updated_at: this.updated_at,
       deleted_at: this.deleted_at,

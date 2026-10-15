@@ -1,10 +1,11 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import AppError from 'src/common/error/AppError';
-import { Class, ClassArm, User, UserType } from 'src/database/entities';
+import { Class, ClassArm, ClassArmType, User, UserType } from 'src/database/entities';
 import { ClassRepository } from 'src/database/repository/class.repository';
 import { ClassArmRepository } from 'src/database/repository/classArm.repository';
 import { UserRepository } from 'src/database/repository/user.repository';
 import { CreateClassArmDto, CreateClassDto } from '../../dtos/class.dto';
+import { ArmName } from 'src/database/enums';
 
 @Injectable()
 export class ClassService {
@@ -70,13 +71,20 @@ export class ClassService {
     const newClassArm = await this.classArmRepository.create({
       ...payload,
       class_id: existingClass.id,
+      type:
+        payload.name === ArmName.NEW_ADMISSION
+          ? ClassArmType.NEW_ADMISSION
+          : ClassArmType.REGULAR,
     });
 
     return newClassArm.toPayload();
   }
 
   async getAllClass(): Promise<Partial<Class>[]> {
-    const classes = await this.classRepository.find();
+    const classes = await this.classRepository.findMany({
+      relations: { arms: true },
+      order: { created_at: 'DESC' },
+    });
     return classes.map((cls) => cls.toPayload());
   }
 

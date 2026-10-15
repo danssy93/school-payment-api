@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { Student } from './student.entity';
 import { ClassArm } from './classArm.entity';
 import { AcademicSession } from './session.entity';
@@ -7,6 +7,10 @@ import { User } from './user.entity';
 import { AbstractEntity } from './base.entity';
 
 @Entity('student_enrollment')
+@Index('UQ_student_active_enrollment_session', ['student_id', 'session_id'], {
+  unique: true,
+  where: '"is_active" = true AND "deleted_at" IS NULL',
+})
 export class StudentEnrollment extends AbstractEntity {
   @Column({ type: 'uuid' })
   student_id: string;
@@ -68,6 +72,10 @@ export class StudentEnrollment extends AbstractEntity {
       enrolled_by: this.enrolled_by,
       enrollment_date: this.enrollment_date,
       is_active: this.is_active,
+      class_arm: this.class_arm,
+      session: this.session,
+      term: this.term,
+      student: this.student,
       created_at: this.created_at,
       updated_at: this.updated_at,
       deleted_at: this.deleted_at,

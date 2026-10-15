@@ -3,10 +3,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './datasources';
 import {
   AcademicSession,
+  AdmissionNumberSequence,
   AssignStaffToClass,
   Class,
   ClassArm,
+  Guardian,
+  Student,
+  StudentEnrollment,
   Term,
+  FeeCategory,
+  FeeDiscount,
+  FeeStructure,
   User,
 } from './entities';
 
@@ -36,6 +43,13 @@ export class DatabaseModule {
       AcademicSession,
       Term,
       AssignStaffToClass,
+      StudentEnrollment,
+      Student,
+      Guardian,
+      AdmissionNumberSequence,
+      FeeCategory,
+      FeeDiscount,
+      FeeStructure,
     ]);
   }
 }

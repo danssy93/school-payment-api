@@ -84,7 +84,29 @@ export class AssignStaffController {
     );
   }
 
+  @ApiOperation({ summary: 'Get all assignments' })
+  @ApiResponse({
+    status: 200,
+    description: 'Assignments retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'No assignments found' })
   @Get()
+  async getAllAssignments(@Res() res: Response) {
+    const assignments = await this.assignStaffService.getAllAssignments();
+    return ResponseFormat.success(
+      res,
+      'Assignments retrieved successfully',
+      assignments,
+      HttpStatus.OK,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all assignments for a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Assignments retrieved successfully',
+  })
+  @Get('user/:user_id')
   async getUserAssignments(
     @Res() res: Response,
     @Param('user_id') user_id: string,

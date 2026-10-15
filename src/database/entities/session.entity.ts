@@ -3,6 +3,7 @@ import { AbstractEntity } from './base.entity';
 import { AcademicSessionStatus } from '../enums';
 import { User } from './user.entity';
 import { Term } from './term.entity';
+import { StudentEnrollment } from './studentEnrollment.entity';
 
 @Entity('academic_sessions')
 export class AcademicSession extends AbstractEntity {
@@ -34,6 +35,9 @@ export class AcademicSession extends AbstractEntity {
 
   @OneToMany(() => Term, (term) => term.session)
   terms: Term[];
+
+  @OneToMany(() => StudentEnrollment, (enrollment) => enrollment.session)
+  enrollments: StudentEnrollment[];
 
   toPayload(): Partial<AcademicSession> {
     return {

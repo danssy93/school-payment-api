@@ -8,6 +8,7 @@ import { ClassModule } from './modules/class/class.module';
 import { StudentModule } from './modules/student/student.module';
 import { SessionModule } from './modules/session/session.module';
 import { AssignStaffModule } from './modules/assign_staff/bursar-class.module';
+import { FeeModule } from './modules/fee/fee.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AssignStaffModule } from './modules/assign_staff/bursar-class.module';
     StudentModule,
     SessionModule,
     AssignStaffModule,
+    FeeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

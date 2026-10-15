@@ -8,3 +8,7 @@ export * from './assign.entity';
 export * from './student.entity';
 export * from './guardian.entity';
 export * from './admissionNumber.entity';
+export * from './studentEnrollment.entity';
+export * from './feeCategory.entity';
+export * from './feeStructure.entity';
+export * from './feeDiscount.entity';

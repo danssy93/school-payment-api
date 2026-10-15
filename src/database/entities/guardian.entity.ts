@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { AbstractEntity } from './base.entity';
 import { GuardianRelationship } from '../enums';
+import { Student } from './student.entity';
 
 @Entity('guardians')
 export class Guardian extends AbstractEntity {
@@ -16,8 +17,8 @@ export class Guardian extends AbstractEntity {
   @Column({ unique: true, length: 20, type: 'varchar' })
   phone_no: string;
 
-  @Column({ unique: true, length: 20, type: 'varchar' })
-  whatsapp_no: string;
+  @Column({ length: 20, type: 'varchar', nullable: true })
+  whatsapp_no?: string;
 
   @Column({ unique: true, length: 100, type: 'varchar', nullable: true })
   email?: string;
@@ -28,14 +29,17 @@ export class Guardian extends AbstractEntity {
   @Column({ type: 'text' })
   home_address: string;
 
-  @Column({ type: 'text' })
-  work_address: string;
+  @Column({ type: 'text', nullable: true })
+  work_address?: string;
 
   @Column({
     type: 'enum',
     enum: GuardianRelationship,
   })
   relationship: GuardianRelationship;
+
+  @OneToMany(() => Student, (student) => student.guardian)
+  students: Student[];
 
   toPayload(): Partial<Guardian> {
     return {
@@ -50,6 +54,7 @@ export class Guardian extends AbstractEntity {
       home_address: this.home_address,
       work_address: this.work_address,
       relationship: this.relationship,
+      students: this.students,
       created_at: this.created_at,
       updated_at: this.updated_at,
       deleted_at: this.deleted_at,

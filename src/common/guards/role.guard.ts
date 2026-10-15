@@ -1,10 +1,10 @@
-import { CanActivate, ExecutionContext, HttpStatus } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../decorators/role.decorator';
 import { UserType } from 'src/database/entities';
 import AppError from '../error/AppError';
 
+@Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
@@ -15,25 +15,21 @@ export class RolesGuard implements CanActivate {
     );
 
     if (!requiredRoles) {
-      return true; // No roles required, allow access
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (user.roles.includes(UserType.SUPER_ADMIN)) {
-      return true;
-    }
-
-    if (!user || !user.roles) {
+    if (!user || !user.type) {
       throw new AppError('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    const hashRequiredRole = user.roles.some((role) =>
-      requiredRoles.includes(role),
-    );
+    if (user.type === UserType.SUPER_ADMIN) {
+      return true;
+    }
 
-    if (!hashRequiredRole) {
+    if (!requiredRoles.includes(user.type)) {
       throw new AppError(
         'Forbidden: Insufficient permission',
         HttpStatus.FORBIDDEN,
